@@ -1,5 +1,7 @@
 package com.app.project.client;
 
+import com.app.project.shared.PhoneNumbers;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +59,7 @@ public class ClientService{
 
         if (phone != null) {
             
-            Client client = this.clientRepository.findByPhone(phone);
+            Client client = this.clientRepository.findByPhone(PhoneNumbers.normalizeLenient(phone));
             if (client != null) clients.add(client);
         
         } else if (name != null) {
@@ -76,9 +78,14 @@ public class ClientService{
         return result;
 }
 
+    // O telefone buscado é padronizado do mesmo jeito que o gravado, então
+    // "(75) 99812-4410" encontra o cliente salvo como "75998124410".
     public ClientDto getClientByPhone(String phone) {
         
-        Client client = this.clientRepository.findByPhone(phone);
+        String normalized = PhoneNumbers.normalizeLenient(phone);
+        if (normalized == null) return null;
+
+        Client client = this.clientRepository.findByPhone(normalized);
         
         return client != null ? toDto(client) : null;
     
@@ -101,9 +108,16 @@ public class ClientService{
 
 
     
+    // Lança IllegalArgumentException (o controller responde 400) se o nome faltar ou o telefone for inválido.
     synchronized public ClientDto createClient(ClientDto clientDTO) {
         
+        if (clientDTO.getName() == null || clientDTO.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("O nome é obrigatório.");
+        }
+
         Client client = toClient(clientDTO);
+        client.setName(clientDTO.getName().trim());
+        client.setPhone(PhoneNumbers.normalize(clientDTO.getPhone()));
         client.setId(0);
 
         Client created = this.clientRepository.createClient(client);
@@ -117,9 +131,10 @@ public class ClientService{
         
         if (existing == null) return null;
 
-        if (dto.getName() != null) existing.setName(dto.getName());
+        if (dto.getName() != null) existing.setName(dto.getName().trim());
         
-        if (dto.getPhone() != null) existing.setPhone(dto.getPhone());
+        // Telefone vazio ("") apaga o telefone; qualquer outro valor é padronizado (ou dá 400 se inválido).
+        if (dto.getPhone() != null) existing.setPhone(PhoneNumbers.normalize(dto.getPhone()));
 
         Client updated = clientRepository.updateClient(existing);
         

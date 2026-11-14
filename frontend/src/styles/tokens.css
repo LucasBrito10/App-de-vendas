@@ -1,0 +1,73 @@
+/* Tokens de design extraídos dos layouts mobile. Use sempre as variáveis, nunca a cor direto. */
+:root {
+  /* Superfícies */
+  --color-bg: #f3f3ee;
+  --color-surface: #ffffff;
+  --color-border: #e6e6e0;
+  --color-overlay: rgba(28, 28, 26, 0.45);
+
+  /* Texto */
+  --color-text: #1c1c1a;
+  --color-text-muted: #66665f;
+  --color-text-inverse: #ffffff;
+
+  /* Marca */
+  --color-primary: #12746a;
+  --color-primary-pressed: #0d5c54;
+  --color-primary-soft: #ddefea;
+  --color-primary-soft-pressed: #c9e5de;
+  --color-primary-text: #0f5f56;
+
+  /* Estados de venda/parcela */
+  --color-open: #1f3f8f;          /* Em aberto */
+  --color-overdue: #9a3412;       /* Atrasado */
+  --color-overdue-bg: #fdf1e1;
+  --color-overdue-border: #f3d3a8;
+  --color-paid: #66665f;          /* Paga */
+  --color-danger: #b42318;        /* Ações destrutivas */
+
+  /* Chips */
+  --color-chip-active-bg: #1c1c1a;
+  --color-chip-active-text: #ffffff;
+
+  /* Tipografia */
+  --font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-size-xs: 0.8125rem;   /* 13px */
+  --font-size-sm: 0.875rem;    /* 14px */
+  --font-size-md: 1rem;        /* 16px */
+  --font-size-lg: 1.125rem;    /* 18px */
+  --font-size-xl: 1.375rem;    /* 22px */
+  --font-size-2xl: 1.75rem;    /* 28px */
+  --font-size-3xl: 2.25rem;    /* 36px */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Espaçamento (escala de 4px) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --page-gutter: 20px;
+
+  /* Bordas e sombras */
+  --radius-sm: 10px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 999px;
+  --shadow-fab: 0 6px 16px rgba(18, 116, 106, 0.28);
+  --shadow-sheet: 0 -8px 24px rgba(0, 0, 0, 0.12);
+
+  /* Medidas fixas */
+  --control-height: 52px;
+  --bottom-nav-height: 72px;
+  --tap-target: 44px;
+
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --transition-fast: 120ms ease;
+}

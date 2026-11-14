@@ -1,0 +1,25 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  max-width: 560px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: var(--space-6) var(--page-gutter) calc(var(--space-8) + var(--safe-bottom));
+}
+
+.withBottomNav {
+  padding-bottom: calc(var(--bottom-nav-height) + var(--space-8) + var(--safe-bottom));
+}
+
+.withFooter {
+  padding-bottom: calc(160px + var(--safe-bottom));
+}
+
+.withBottomNav.withFab {
+  padding-bottom: calc(var(--bottom-nav-height) + 110px + var(--safe-bottom));
+}
+
+.withFab:not(.withBottomNav) {
+  padding-bottom: calc(110px + var(--safe-bottom));
+}

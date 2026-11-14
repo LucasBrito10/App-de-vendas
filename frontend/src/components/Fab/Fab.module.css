@@ -1,0 +1,24 @@
+.fab {
+  position: fixed;
+  right: var(--page-gutter);
+  bottom: calc(var(--space-6) + var(--safe-bottom));
+  z-index: 20;
+  min-height: 54px;
+  padding: 0 var(--space-6);
+  border: none;
+  border-radius: var(--radius-lg);
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  box-shadow: var(--shadow-fab);
+  cursor: pointer;
+}
+
+.fab:active {
+  background: var(--color-primary-pressed);
+}
+
+.aboveNav {
+  bottom: calc(var(--bottom-nav-height) + var(--space-6) + var(--safe-bottom));
+}

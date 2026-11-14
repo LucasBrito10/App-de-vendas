@@ -1,0 +1,31 @@
+.group {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.wrap {
+  flex-wrap: wrap;
+}
+
+.fill > .chip {
+  flex: 1;
+}
+
+.chip {
+  min-height: 40px;
+  padding: var(--space-1) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.selected {
+  border-color: var(--color-chip-active-bg);
+  background: var(--color-chip-active-bg);
+  color: var(--color-chip-active-text);
+}

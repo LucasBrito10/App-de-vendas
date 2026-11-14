@@ -1,0 +1,35 @@
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.eyebrow {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.description {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-md);
+}
+
+.action {
+  flex-shrink: 0;
+  margin-top: 2px;
+}

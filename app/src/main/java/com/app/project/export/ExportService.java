@@ -76,6 +76,43 @@ public class ExportService {
         return new CsvFile(buildFileName("vendas", startDate, endDate), csv.toBytes());
     }
 
+    // Uma linha por produto vendido, para análises como "o que mais vende".
+    // Nome e preço vêm do item (valores da época da venda), não do catálogo atual.
+    public CsvFile exportSaleItems(Long clientId, LocalDate startDate, LocalDate endDate) {
+        List<SaleWithDetails> sales = saleRepository.findFiltered(clientId, startDate, endDate);
+        Map<Long, Client> clientsById = loadClientsById();
+
+        CsvWriter csv = new CsvWriter().row(
+                "ID da venda", "Data da compra", "Cliente", "Produto",
+                "Quantidade", "Preço unitário (R$)", "Subtotal (R$)");
+
+        for (SaleWithDetails details : sales) {
+            if (details.items == null) {
+                continue;
+            }
+
+            Client client = clientsById.get(details.sale.clientId);
+
+            for (SaleItemWithProduct entry : details.items) {
+                BigDecimal unitPrice = entry.item.unitPrice;
+                BigDecimal subtotal = unitPrice != null
+                        ? unitPrice.multiply(BigDecimal.valueOf(entry.item.quantity))
+                        : null;
+
+                csv.row(
+                        details.sale.saleId,
+                        details.sale.purchaseDate,
+                        client != null ? client.getName() : null,
+                        entry.item.productName,
+                        entry.item.quantity,
+                        unitPrice,
+                        subtotal);
+            }
+        }
+
+        return new CsvFile(buildFileName("itens_vendas", startDate, endDate), csv.toBytes());
+    }
+
     public CsvFile exportInstallments(Long clientId, LocalDate startDate, LocalDate endDate,
                                       InstallmentStatus status) {
         LocalDate today = LocalDate.now();

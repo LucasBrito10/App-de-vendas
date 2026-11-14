@@ -4,3 +4,6 @@ local.properties
 .idea/
 .ide-libs/
 *:Zone.Identifier
+
+# Build do frontend (gerado por "npm run build" em frontend/)
+app/src/main/assets/www/

@@ -1,0 +1,32 @@
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--tap-target);
+  height: var(--tap-target);
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.iconButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+.plain:not(:disabled):active {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.outlined {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+.outlined:not(:disabled):active {
+  background: var(--color-bg);
+}

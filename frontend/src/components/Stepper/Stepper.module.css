@@ -1,0 +1,13 @@
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.value {
+  min-width: 32px;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
