@@ -18,6 +18,7 @@ import fi.iki.elonen.NanoHTTPD.Response.Status;
 public class ExportController {
     private static final String BASE_URI = "/api/v1/export";
     private static final String SALES_URI = BASE_URI + "/sales";
+    private static final String SALE_ITEMS_URI = BASE_URI + "/sale-items";
     private static final String INSTALLMENTS_URI = BASE_URI + "/installments";
     private static final String CLIENTS_URI = BASE_URI + "/clients";
     private static final String PRODUCTS_URI = BASE_URI + "/products";
@@ -39,6 +40,10 @@ public class ExportController {
                 return exportSales(params);
             }
 
+            if (SALE_ITEMS_URI.equals(uri)) {
+                return exportSaleItems(params);
+            }
+
             if (INSTALLMENTS_URI.equals(uri)) {
                 return exportInstallments(params);
             }
@@ -52,7 +57,7 @@ public class ExportController {
             }
 
             return errorResponse(Status.NOT_FOUND,
-                    "Exportação não encontrada. Use sales, installments, clients ou products.");
+                    "Exportação não encontrada. Use sales, sale-items, installments, clients ou products.");
         } catch (NumberFormatException e) {
             return errorResponse(Status.BAD_REQUEST, "Parâmetro numérico inválido.");
         } catch (DateTimeParseException e) {
@@ -73,6 +78,16 @@ public class ExportController {
         validatePeriod(startDate, endDate);
 
         return csvResponse(exportService.exportSales(clientId, startDate, endDate));
+    }
+
+    private Response exportSaleItems(Map<String, List<String>> params) {
+        Long clientId = optionalPositiveLongParam(params, "clientId");
+        LocalDate startDate = optionalDateParam(params, "startDate");
+        LocalDate endDate = optionalDateParam(params, "endDate");
+
+        validatePeriod(startDate, endDate);
+
+        return csvResponse(exportService.exportSaleItems(clientId, startDate, endDate));
     }
 
     private Response exportInstallments(Map<String, List<String>> params) {

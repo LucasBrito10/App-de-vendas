@@ -1,0 +1,24 @@
+.status {
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+.sm {
+  font-size: var(--font-size-sm);
+}
+
+.md {
+  font-size: var(--font-size-md);
+}
+
+.paid {
+  color: var(--color-paid);
+}
+
+.open {
+  color: var(--color-open);
+}
+
+.overdue {
+  color: var(--color-overdue);
+}
