@@ -13,6 +13,8 @@ import com.app.project.client.ClientController;
 import com.app.project.client.ClientDao;
 import com.app.project.client.ClientRepository;
 import com.app.project.client.ClientService;
+import com.app.project.export.ExportController;
+import com.app.project.export.ExportService;
 import com.app.project.products.ProductController;
 import com.app.project.products.ProductDao;
 import com.app.project.products.ProductRepository;
@@ -26,11 +28,7 @@ import com.app.project.shared.NotFound;
 
 import java.io.IOException;
 
-// Cria as instâncias de objetos relacionados ao servidor HTTP e ao backend.
-// Tem um papel parecido com o Spring Boot no que diz respeito à injeção de dependências
-// e ao gerenciamento do ciclo de vida dos objetos.
 public class HttpServerService extends Service {
-
     private static final String TAG = "HttpServerService";
     private static final String CHANNEL_ID = "HttpServerChannel";
     private static final int NOTIFICATION_ID = 1;
@@ -42,16 +40,12 @@ public class HttpServerService extends Service {
 
     @Override
     public void onCreate() {
-
         super.onCreate();
         setupForegroundNotification();
 
         ApiDispatcher apiDispatcher = injectDependencies();
         AssetManager assetManager = getAssets();
 
-        // O token foi gerado pela ProjectApplication antes deste serviço ser iniciado.
-        // Este serviço apenas o repassa ao NanoServer, que é quem guarda e valida o token
-        // em cada requisição. Por isso não há atributo para o token nesta classe.
         String sessionToken = ((ProjectApplication) getApplication()).getSessionToken();
 
         this.nanoServer = new NanoServer(HOST, PORT, apiDispatcher, assetManager, sessionToken);
@@ -59,15 +53,12 @@ public class HttpServerService extends Service {
         try {
             this.nanoServer.start();
         } catch (IOException e) {
-            // Sem servidor o app não funciona: registra o erro e encerra o serviço.
             Log.e(TAG, "Falha ao iniciar o servidor HTTP na porta " + PORT, e);
             stopSelf();
         }
     }
 
-    // Aqui as dependências são criadas e injetadas (DAOs → Repositories → Services → Controllers → Dispatcher).
     private ApiDispatcher injectDependencies() {
-
         AppDatabase db = AppDatabase.getInstance(this);
 
         ClientDao clientDao = db.clientDao();
@@ -80,15 +71,19 @@ public class HttpServerService extends Service {
 
         ClientService clientService = new ClientService(clientRepository);
         ProductService productService = new ProductService(productRepository);
-        // A venda consulta clientes (existe?) e produtos (nome e preço atuais).
+
         SaleService saleService = new SaleService(saleRepository, clientRepository, productRepository);
+
+        ExportService exportService = new ExportService(saleRepository, clientRepository, productRepository);
 
         ClientController clientController = new ClientController(clientService);
         ProductController productController = new ProductController(productService);
         SaleController saleController = new SaleController(saleService);
+        ExportController exportController = new ExportController(exportService);
         NotFound notFound = new NotFound();
 
-        return new ApiDispatcher(clientController, productController, saleController, notFound);
+        return new ApiDispatcher(clientController, productController, saleController,
+                exportController, notFound);
     }
 
     @Override
@@ -102,14 +97,10 @@ public class HttpServerService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        // Serviço iniciado (started), não vinculado (bound): nenhuma Activity se conecta a ele diretamente.
         return null;
     }
 
-    // Exigência do Android para manter o servidor vivo em segundo plano.
-    
     private void setupForegroundNotification() {
-
         NotificationChannel channel = new NotificationChannel(
                 CHANNEL_ID,
                 "Servidor local",
