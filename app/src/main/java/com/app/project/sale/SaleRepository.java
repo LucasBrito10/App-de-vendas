@@ -4,22 +4,14 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-// Camada de acesso a dados das vendas: traduz as necessidades do service em chamadas ao DAO.
 public class SaleRepository {
-
     private final SaleDao saleDao;
 
     public SaleRepository(SaleDao saleDao) {
         this.saleDao = saleDao;
     }
 
-    // ---------------------------------------------------------------------------------------
-    // Vendas
-    // ---------------------------------------------------------------------------------------
-
-    // Grava venda + itens + parcelas de forma atômica. Retorna a venda completa recém-criada.
     public SaleWithDetails createSale(Sale sale, List<SaleItem> items, List<Installment> installments) {
-
         long saleId = saleDao.insertSaleWithDetails(sale, items, installments);
 
         return saleDao.getSaleWithDetailsById(saleId);
@@ -45,7 +37,6 @@ public class SaleRepository {
         return saleDao.getAllSalesWithDetails();
     }
 
-    // Parâmetros null desligam o filtro correspondente.
     public List<SaleWithDetails> findFiltered(Long clientId, LocalDate startDate, LocalDate endDate) {
         return saleDao.getSalesWithDetailsFiltered(clientId, startDate, endDate);
     }
@@ -55,17 +46,9 @@ public class SaleRepository {
         return saleDao.getSalesWithDetailsFilteredPage(clientId, startDate, endDate, size, (page - 1) * size);
     }
 
-    // ---------------------------------------------------------------------------------------
-    // Itens
-    // ---------------------------------------------------------------------------------------
-
     public List<SaleItemWithProduct> findItemsBySale(long saleId) {
         return saleDao.getItemsBySale(saleId);
     }
-
-    // ---------------------------------------------------------------------------------------
-    // Parcelas
-    // ---------------------------------------------------------------------------------------
 
     public Installment findInstallmentById(long id) {
         return saleDao.getInstallmentById(id);
@@ -83,12 +66,15 @@ public class SaleRepository {
         return saleDao.getPendingInstallmentsBetween(startDate, endDate);
     }
 
-    // Retorna false se a parcela não existir OU se já estiver paga.
+    public List<InstallmentWithSaleInfo> findInstallmentsWithSaleInfo(Long clientId, LocalDate startDate,
+                                                                      LocalDate endDate) {
+        return saleDao.getInstallmentsWithSaleInfo(clientId, startDate, endDate);
+    }
+
     public boolean registerPayment(long installmentId, LocalDate paidAt, BigDecimal paidAmount) {
         return saleDao.registerPayment(installmentId, paidAt, paidAmount) > 0;
     }
 
-    // Retorna false se a parcela não existir OU se não estiver paga.
     public boolean cancelPayment(long installmentId) {
         return saleDao.cancelPayment(installmentId) > 0;
     }
