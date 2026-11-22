@@ -53,3 +53,50 @@ tasks.register('exportIdeLibs') {
         }
     }
 }
+
+// =============================================================================================
+// Frontend (React) empacotado no APK
+// =============================================================================================
+// O NanoServer serve a interface a partir de src/main/assets/www, que é gerada pelo build do
+// frontend (pasta fora do git). Estas tarefas rodam o build automaticamente antes de cada
+// build do Android, para nunca gerar um APK sem interface ("Frontend build não encontrado").
+//
+// Requisito: Node.js 18+ instalado na máquina que gera o APK.
+// Para pular (ex.: só mexeu no Java e o www já está gerado): ./gradlew assembleDebug -PskipFrontend
+
+def frontendDir = rootProject.file('frontend')
+def frontendOutDir = file('src/main/assets/www')
+def npmCommand = System.getProperty('os.name').toLowerCase().contains('windows') ? 'npm.cmd' : 'npm'
+
+tasks.register('installFrontend', Exec) {
+    group = 'frontend'
+    description = 'Instala as dependências do frontend (npm ci) quando o package-lock.json muda.'
+    workingDir frontendDir
+    commandLine npmCommand, 'ci', '--no-audit', '--no-fund'
+    inputs.file(new File(frontendDir, 'package-lock.json'))
+    outputs.dir(new File(frontendDir, 'node_modules'))
+}
+
+tasks.register('buildFrontend', Exec) {
+    group = 'frontend'
+    description = 'Gera a interface (npm run build) em src/main/assets/www.'
+    dependsOn 'installFrontend'
+    workingDir frontendDir
+    // O destino é passado explicitamente, para não depender do caminho relativo do vite.config.ts.
+    commandLine npmCommand, 'run', 'build', '--', '--outDir', frontendOutDir.absolutePath, '--emptyOutDir'
+    // Só refaz quando algo do frontend mudou.
+    inputs.dir(new File(frontendDir, 'src'))
+    inputs.files(['index.html', 'package.json', 'package-lock.json', 'vite.config.ts', 'tsconfig.json']
+            .collect { new File(frontendDir, it) })
+    outputs.dir(frontendOutDir)
+    doLast {
+        if (!new File(frontendOutDir, 'index.html').exists()) {
+            throw new GradleException('O build do frontend não gerou ' + frontendOutDir + '/index.html.')
+        }
+    }
+}
+
+if (!project.hasProperty('skipFrontend')) {
+    // preBuild é criada pelo plugin do Android; configureEach funciona antes ou depois dela existir.
+    tasks.matching { it.name == 'preBuild' }.configureEach { dependsOn 'buildFrontend' }
+}

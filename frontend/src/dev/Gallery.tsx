@@ -1,5 +1,5 @@
 // Galeria de desenvolvimento: remonta telas do layout usando só a camada de componentes.
-// Navegue com #inicio, #clientes, #cliente, #venda, #receber, #atrasados, #vendas,
+// Abra em /dev/galeria (só no npm run dev) e navegue com #inicio, #clientes, #cliente, #venda, #receber, #atrasados, #vendas,
 // #editar-cliente, #nova-venda, #adicionar-item, #exportar, #produtos, #novo-produto, #estados.
 // Remova este arquivo quando as páginas reais forem criadas.
 import { useEffect, useState } from 'react';
