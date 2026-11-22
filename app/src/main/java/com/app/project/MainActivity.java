@@ -1,6 +1,8 @@
 package com.app.project;
 
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.webkit.CookieManager;
@@ -8,6 +10,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
@@ -54,7 +57,18 @@ public class MainActivity extends AppCompatActivity {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                return !isInternalUrl(request.getUrl());
+                Uri uri = request.getUrl();
+
+                if (isInternalUrl(uri)) {
+                    return false;
+                }
+
+                // Fora do app, só os botões Ligar / WhatsApp / Cobrar podem abrir algo.
+                // Qualquer outro link externo continua bloqueado.
+                if (isContactUrl(uri)) {
+                    openExternally(uri);
+                }
+                return true;
             }
         });
 
@@ -66,6 +80,27 @@ public class MainActivity extends AppCompatActivity {
                 this.exportDownloader.download(url);
             }
         });
+    }
+
+    // tel: abre o discador (sem ligar sozinho, então não precisa de permissão);
+    // https://wa.me/... abre a conversa no WhatsApp.
+    private boolean isContactUrl(Uri uri) {
+        String scheme = uri.getScheme();
+
+        if ("tel".equals(scheme)) {
+            return true;
+        }
+        return "https".equals(scheme) && "wa.me".equals(uri.getHost());
+    }
+
+    private void openExternally(Uri uri) {
+        String action = "tel".equals(uri.getScheme()) ? Intent.ACTION_DIAL : Intent.ACTION_VIEW;
+
+        try {
+            startActivity(new Intent(action, uri));
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, "Nenhum app encontrado para abrir este contato.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private boolean isInternalUrl(Uri uri) {

@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 
 // O build vai direto para os assets do Android: o NanoServer serve "assets/www"
@@ -12,5 +12,10 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+  },
+  test: {
+    environment: 'jsdom',
+    include: ['src/**/*.test.{ts,tsx}'],
+    restoreMocks: true,
   },
 });
